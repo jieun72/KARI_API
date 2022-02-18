@@ -1,0 +1,5 @@
+{
+  "entry": "./dist/app.js",
+  "outdir": "output",
+  "platform": "node"
+}
