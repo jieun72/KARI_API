@@ -2,7 +2,7 @@ import config from "../config/config";
 import { FluxTableMetaData, HttpError, InfluxDB } from "@influxdata/influxdb-client";
 
 /**
- * 미세먼지 측정기기 리스트 dto
+ * 초분광 복사계 검색 dto
  * @param {string} startDatetime - 검색조건 : 시작시간
  * @param {string} endDatetime - 검색조건 : 종료시간
  * @returns {Promise<any>} - 검색결과

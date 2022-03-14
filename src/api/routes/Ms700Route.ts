@@ -4,7 +4,7 @@ import ms700Service from "../../services/Ms700Service";
 const router = Router();
 
 /**
- * 미세먼지 측정기기 리스트 controller
+ * 초분광 복사계 검색 controller
  * @param {Request} request - request
  * @param {Response} response - response
  */
