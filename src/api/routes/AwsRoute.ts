@@ -1,10 +1,10 @@
 import { NextFunction, Router } from "express";
-import ms700Service from "../../services/Ms700Service";
+import awsService from "../../services/AwsService";
 
 const router = Router();
 
 /**
- * 초분광 복사계 검색 controller
+ * AWS검색 controller
  * @param {Request} request - request
  * @param {Response} response - response
  */
@@ -15,20 +15,23 @@ router.get("/", async (request, response, next) => {
 
     // 종료시간
     const endDatetime: string = request.query.endDatetime as string;
+
+    // 측정종류
+    const type: string = request.query.type as string;
    
     // 결과용 변수 정의
     let result: { statusCode : number, error: string | undefined, count: number, data: any[] | null } 
         = { statusCode : 0, error: "", count: 0, data: [] };
 
     // 필수 입력 체크
-    if(startDatetime == null || startDatetime == "" || endDatetime == null || endDatetime == "")  {
+    if(startDatetime == null || startDatetime == "" || endDatetime == null || endDatetime == "" || type == null || type == "")  {
         result.statusCode = 400;
         result.error = "Bad Request";
         response.json(result);
         return;
     }
 
-    response.json(await ms700Service(startDatetime, endDatetime));
+    response.json(await awsService(startDatetime, endDatetime, type));
     
 });
 

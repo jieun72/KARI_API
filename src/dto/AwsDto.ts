@@ -2,12 +2,13 @@ import config from "../config/config";
 import { FluxTableMetaData, HttpError, InfluxDB } from "@influxdata/influxdb-client";
 
 /**
- * 초분광 복사계 검색 dto
+ * AWS 검색 dto
  * @param {string} startDatetime - 검색조건 : 시작시간
  * @param {string} endDatetime - 검색조건 : 종료시간
+ * @param {string} type - 검색조건 : 측정종류
  * @returns {Promise<any>} - 검색결과
  */
-const ms700Dto : (startDatetime: String, endDatetime: String| null) => Promise<any> = async (startDatetime, endDatetime) => {
+const awsDto : (startDatetime: String, endDatetime: String, type: String) => Promise<any> = async (startDatetime, endDatetime, type) => {
     
     const url = config.url
     const token = config.token
@@ -24,11 +25,15 @@ const ms700Dto : (startDatetime: String, endDatetime: String| null) => Promise<a
         `
             from(bucket: "${config.bucket}")
               |> range(start: ${startDatetime}Z, stop: ${endDatetime}Z)
-              |> filter(fn: (r) => r._measurement == "Ms700")
-              |> filter(fn: (r) => r["_field"] == "ref_length")
-              |> filter(fn: (r) => r["name"] == "tot_ref")             
+              |> filter(fn: (r) => r._measurement == "aws")
+              |> filter(fn: (r) => r["_field"] == "vars")
         `
     );
+
+    // 해당하는 측정 종류만 검색(전체검색이 아닐 경우)
+    if(type != "ALL") {
+        query += ` |> filter(fn: (r) => r["name"] == "${type}") `;
+    }
 
     result.data = [];
 
@@ -37,6 +42,7 @@ const ms700Dto : (startDatetime: String, endDatetime: String| null) => Promise<a
             // 검색 결과 처리
             const o = tableMeta.toObject(row);
             const item = {
+                type: o.name,
                 time: o._time,
                 value: o._value
             };
@@ -59,4 +65,4 @@ const ms700Dto : (startDatetime: String, endDatetime: String| null) => Promise<a
     }));
 };
 
-export default ms700Dto;
+export default awsDto;
