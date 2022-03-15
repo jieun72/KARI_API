@@ -24,7 +24,7 @@ const awsService: (startDatetime: string, endDatetime: string, type: string) => 
         let endDate = dayjs(endDatetime).format("YYYY-MM-DDTHH:mm:ss")
     
         // 검색 조건 - 측정종류 체크
-        if(!types.includes(type)) {
+        if(!types.includes(type) && type != "ALL") {
             throw Error;
         }
 
