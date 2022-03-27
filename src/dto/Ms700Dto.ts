@@ -20,12 +20,13 @@ const ms700Dto : (startDatetime: String, endDatetime: String| null) => Promise<a
         = { statusCode : 0, error: "", count: 0, data: null };
 
     // influxDB 쿼리 작성
+    // TODO: 추후에 _field->vars로 수정예정
     let query = new String(
         `
             from(bucket: "${config.bucket}")
               |> range(start: ${startDatetime}Z, stop: ${endDatetime}Z)
               |> filter(fn: (r) => r._measurement == "Ms700")
-              |> filter(fn: (r) => r["_field"] == "vars")
+              |> filter(fn: (r) => r["_field"] == "ref_length")
               |> filter(fn: (r) => r["name"] == "tot_ref")             
         `
     );
