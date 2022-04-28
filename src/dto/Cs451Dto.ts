@@ -20,39 +20,19 @@ const cs451Dto : (startDatetime: string, endDatetime: string, type: string) => P
     // UNIX TIME 변환 대상 항목
     const unixTypes = config.cs451UNIXTypes;
 
-    // 검색조건 : UNIX TIME 변환용
-    let utcStartDatetime;
-    let utcEndDatetime;
-
     // 결과용 변수 정의
     let result: { statusCode : number, error: string | undefined, count: number, data: any[] | null } 
         = { statusCode : 0, error: "", count: 0, data: null };
 
-
-    // 검색시간 UNIX TIME으로 변환작업    
-    if(unixTypes.includes(type)) {
-        utcStartDatetime = dayjs(startDatetime).unix();
-        utcEndDatetime = dayjs(endDatetime).unix();
-    }
-
     // influxDB 쿼리 작성
     let query = new String(
-        ` from(bucket: "${config.bucket}") `
+        `
+            from(bucket: "${config.bucket}")
+              |> range(start: ${startDatetime}Z, stop: ${endDatetime}Z)
+              |> filter(fn: (r) => r._measurement == "cs451")
+              |> filter(fn: (r) => r["_field"] == "vars")
+        `
     );
-
-    if(unixTypes.includes(type)) {
-        query += `
-                |> range(start: ${utcStartDatetime}, stop: ${utcEndDatetime})
-                |> filter(fn: (r) => r._measurement == "cs451")
-                |> filter(fn: (r) => r["_field"] == "vars")
-                `;
-    } else {
-        query += `
-                |> range(start: ${startDatetime}Z, stop: ${endDatetime}Z)
-                |> filter(fn: (r) => r._measurement == "cs451")
-                |> filter(fn: (r) => r["_field"] == "vars")
-                `;
-    }
 
     // 해당하는 측정 종류만 검색(전체검색이 아닐 경우)
     if(type != "ALL") {
@@ -69,11 +49,7 @@ const cs451Dto : (startDatetime: string, endDatetime: string, type: string) => P
             const o = tableMeta.toObject(row);
             if (unixTypes.includes(o.name)) {
                 // UNIX TIME -> TIMESTAMP 변환처리
-                if(o.time.includes(".")) {
-                    o._time = dayjs(parseInt(o._time) * 1000).format("YYYY-MM-DDTHH:mm:ss");
-                } else {
-                    o._time = dayjs(parseInt(o._time)).format("YYYY-MM-DDTHH:mm:ss");
-                }
+                o._value = dayjs(parseInt(o._value) * 1000).format("YYYY-MM-DDTHH:mm:ss");
             }
             const item = {
                 type: o.name,
