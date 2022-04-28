@@ -32,7 +32,7 @@ const awsDto : (startDatetime: string, endDatetime: string, type: string) => Pro
 
     // 해당하는 측정 종류만 검색(전체검색이 아닐 경우)
     if(type != "ALL") {
-        query += ` |> filter(fn: (r) => r["name"] == "${type}") `;
+        query += `      |> filter(fn: (r) => r["name"] == "${type}") `;
     }
 
     console.info(query);
