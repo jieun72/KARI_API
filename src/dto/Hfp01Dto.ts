@@ -2,12 +2,12 @@ import config from "../config/config";
 import { FluxTableMetaData, HttpError, InfluxDB } from "@influxdata/influxdb-client";
 
 /**
- * 초분광 복사계 검색 dto
+ * 토양열 플럭스 센서 검색 dto
  * @param {string} startDatetime - 검색조건 : 시작시간
  * @param {string} endDatetime - 검색조건 : 종료시간
  * @returns {Promise<any>} - 검색결과
  */
-const ms700Dto : (startDatetime: string, endDatetime: string| null) => Promise<any> = async (startDatetime, endDatetime) => {
+const hfp01Dto : (startDatetime: string, endDatetime: string| null) => Promise<any> = async (startDatetime, endDatetime) => {
     
     const url = config.url
     const token = config.token
@@ -20,15 +20,13 @@ const ms700Dto : (startDatetime: string, endDatetime: string| null) => Promise<a
         = { statusCode : 0, error: "", count: 0, data: null };
 
     // influxDB 쿼리 작성
-    // TODO: 추후에 _field->vars로 수정예정
-    // TODO: 추후에 name 수정예정(확정되면)
     let query = new String(
         `
             from(bucket: "${config.bucket}")
               |> range(start: ${startDatetime}Z, stop: ${endDatetime}Z)
-              |> filter(fn: (r) => r._measurement == "Ms700")
-              |> filter(fn: (r) => r["_field"] == "ref_length")
-              |> filter(fn: (r) => r["name"] == "500.0")             
+              |> filter(fn: (r) => r._measurement == "hfp01")
+              |> filter(fn: (r) => r["_field"] == "vars")
+              |> filter(fn: (r) => r["name"] == "soil_heat_flux_Avg")
         `
     );
 
@@ -63,4 +61,4 @@ const ms700Dto : (startDatetime: string, endDatetime: string| null) => Promise<a
     }));
 };
 
-export default ms700Dto;
+export default hfp01Dto;

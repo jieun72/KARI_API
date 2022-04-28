@@ -1,14 +1,15 @@
 import config from "../config/config";
+import dayjs from "dayjs";
 import { FluxTableMetaData, HttpError, InfluxDB } from "@influxdata/influxdb-client";
 
 /**
- * AWS 검색 dto
+ * 수심/수온 측정계 검색 dto
  * @param {string} startDatetime - 검색조건 : 시작시간
  * @param {string} endDatetime - 검색조건 : 종료시간
  * @param {string} type - 검색조건 : 측정종류
  * @returns {Promise<any>} - 검색결과
  */
-const awsDto : (startDatetime: string, endDatetime: string, type: string) => Promise<any> = async (startDatetime, endDatetime, type) => {
+const cs451Dto : (startDatetime: string, endDatetime: string, type: string) => Promise<any> = async (startDatetime, endDatetime, type) => {
     
     const url = config.url
     const token = config.token
@@ -16,23 +17,46 @@ const awsDto : (startDatetime: string, endDatetime: string, type: string) => Pro
     const client = new InfluxDB({ url, token });
     const queryApi = client.getQueryApi(config.org);
 
+    // UNIX TIME 변환 대상 항목
+    const unixTypes = config.cs451UNIXTypes;
+
+    // 검색조건 : UNIX TIME 변환용
+    let utcStartDatetime;
+    let utcEndDatetime;
+
     // 결과용 변수 정의
     let result: { statusCode : number, error: string | undefined, count: number, data: any[] | null } 
         = { statusCode : 0, error: "", count: 0, data: null };
 
+
+    // 검색시간 UNIX TIME으로 변환작업    
+    if(unixTypes.includes(type)) {
+        utcStartDatetime = dayjs(startDatetime).unix();
+        utcEndDatetime = dayjs(endDatetime).unix();
+    }
+
     // influxDB 쿼리 작성
     let query = new String(
-        `
-            from(bucket: "${config.bucket}")
-              |> range(start: ${startDatetime}Z, stop: ${endDatetime}Z)
-              |> filter(fn: (r) => r._measurement == "aws")
-              |> filter(fn: (r) => r["_field"] == "vars")
-        `
+        ` from(bucket: "${config.bucket}") `
     );
+
+    if(unixTypes.includes(type)) {
+        query += `
+                |> range(start: ${utcStartDatetime}, stop: ${utcEndDatetime})
+                |> filter(fn: (r) => r._measurement == "cs451")
+                |> filter(fn: (r) => r["_field"] == "vars")
+                `;
+    } else {
+        query += `
+                |> range(start: ${startDatetime}Z, stop: ${endDatetime}Z)
+                |> filter(fn: (r) => r._measurement == "cs451")
+                |> filter(fn: (r) => r["_field"] == "vars")
+                `;
+    }
 
     // 해당하는 측정 종류만 검색(전체검색이 아닐 경우)
     if(type != "ALL") {
-        query += ` |> filter(fn: (r) => r["name"] == "${type}") `;
+        query += `|> filter(fn: (r) => r["name"] == "${type}")`;
     }
 
     console.info(query);
@@ -43,6 +67,14 @@ const awsDto : (startDatetime: string, endDatetime: string, type: string) => Pro
         next(row: string[], tableMeta: FluxTableMetaData) {
             // 검색 결과 처리
             const o = tableMeta.toObject(row);
+            if (unixTypes.includes(o.name)) {
+                // UNIX TIME -> TIMESTAMP 변환처리
+                if(o.time.includes(".")) {
+                    o._time = dayjs(parseInt(o._time) * 1000).format("YYYY-MM-DDTHH:mm:ss");
+                } else {
+                    o._time = dayjs(parseInt(o._time)).format("YYYY-MM-DDTHH:mm:ss");
+                }
+            }
             const item = {
                 type: o.name,
                 time: o._time,
@@ -67,4 +99,4 @@ const awsDto : (startDatetime: string, endDatetime: string, type: string) => Pro
     }));
 };
 
-export default awsDto;
+export default cs451Dto;
