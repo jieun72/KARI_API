@@ -2,13 +2,13 @@ import config from "../config/config";
 import { FluxTableMetaData, HttpError, InfluxDB } from "@influxdata/influxdb-client";
 
 /**
- * 적외선 복사계 검색 dto
+ * 순 복사계 검색 dto
  * @param {string} startDatetime - 검색조건 : 시작시간
  * @param {string} endDatetime - 검색조건 : 종료시간
  * @param {string} type - 검색조건 : 측정종류
  * @returns {Promise<any>} - 검색결과
  */
-const si1111Dto : (startDatetime: string, endDatetime: string, type: string) => Promise<any> = async (startDatetime, endDatetime, type) => {
+const si111Dto : (startDatetime: string, endDatetime: string, type: string) => Promise<any> = async (startDatetime, endDatetime, type) => {
     
     const url = config.url
     const token = config.token
@@ -25,7 +25,7 @@ const si1111Dto : (startDatetime: string, endDatetime: string, type: string) => 
         `
             from(bucket: "${config.bucket}")
               |> range(start: ${startDatetime}Z, stop: ${endDatetime}Z)
-              |> filter(fn: (r) => r._measurement == "si111")
+              |> filter(fn: (r) => r._measurement == "crn4")
               |> filter(fn: (r) => r["_field"] == "vars")
         `
     );
@@ -67,4 +67,4 @@ const si1111Dto : (startDatetime: string, endDatetime: string, type: string) => 
     }));
 };
 
-export default si1111Dto;
+export default si111Dto;

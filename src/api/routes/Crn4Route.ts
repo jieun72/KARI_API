@@ -1,5 +1,5 @@
 import { NextFunction, Router } from "express";
-import si111service from "../../services/Si111Service";
+import crn4service from "../../services/Crn4Service";
 
 const router = Router();
 
@@ -31,7 +31,7 @@ router.get("/", async (request, response, next) => {
         return;
     }
 
-    response.json(await si111service(startDatetime, endDatetime, type));
+    response.json(await crn4service(startDatetime, endDatetime, type));
     
 });
 
