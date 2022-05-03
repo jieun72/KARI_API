@@ -51,6 +51,11 @@ const ms700Dto : (startDatetime: string, endDatetime: string| null) => Promise<a
                 type = "B";
             }
 
+            if(o._value == -999) {
+                // null값 처리
+                o._value = -9999;
+            }
+            
             const item = {
                 type: type,
                 time: o._time,

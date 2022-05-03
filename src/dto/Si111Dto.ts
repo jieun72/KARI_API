@@ -43,6 +43,10 @@ const si1111Dto : (startDatetime: string, endDatetime: string, type: string) => 
         next(row: string[], tableMeta: FluxTableMetaData) {
             // 검색 결과 처리
             const o = tableMeta.toObject(row);
+            if(o._value == -999) {
+                // null값 처리
+                o._value = -9999;
+            }
             const item = {
                 type: o.name,
                 time: o._time,

@@ -38,6 +38,10 @@ const hfp01Dto : (startDatetime: string, endDatetime: string| null) => Promise<a
         next(row: string[], tableMeta: FluxTableMetaData) {
             // 검색 결과 처리
             const o = tableMeta.toObject(row);
+            if(o._value == -999) {
+                // null값 처리
+                o._value = -9999;
+            }
             const item = {
                 time: o._time,
                 value: o._value

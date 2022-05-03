@@ -51,6 +51,10 @@ const cs451Dto : (startDatetime: string, endDatetime: string, type: string) => P
                 // UNIX TIME -> TIMESTAMP 변환처리
                 o._value = dayjs(parseInt(o._value) * 1000).format("YYYY-MM-DDTHH:mm:ss");
             }
+            if(o._value == -999) {
+                // null값 처리
+                o._value = -9999;
+            }
             const item = {
                 type: o.name,
                 time: o._time,
