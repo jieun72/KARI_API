@@ -22,13 +22,14 @@ const ms700Dto : (startDatetime: string, endDatetime: string| null) => Promise<a
     // influxDB 쿼리 작성
     // TODO: 추후에 _field->vars로 수정예정
     // TODO: 추후에 name 수정예정(확정되면)
+    // TODO: 추후에 R,G,B 값 수정 예정(확정되면)
     let query = new String(
         `
             from(bucket: "${config.bucket}")
               |> range(start: ${startDatetime}Z, stop: ${endDatetime}Z)
               |> filter(fn: (r) => r._measurement == "Ms700")
               |> filter(fn: (r) => r["_field"] == "ref_length")
-              |> filter(fn: (r) => r["name"] == "500.0")             
+              |> filter(fn: (r) => r["name"] == "401.0" or r["name"] == "602.0" or r["name"] == "761.0")
         `
     );
 
@@ -40,7 +41,18 @@ const ms700Dto : (startDatetime: string, endDatetime: string| null) => Promise<a
         next(row: string[], tableMeta: FluxTableMetaData) {
             // 검색 결과 처리
             const o = tableMeta.toObject(row);
+            let type = "";
+
+            if(o.name == "401.0") {
+                type = "R";
+            } else if(o.name == "602.0") {
+                type = "G";
+            } else if(o.name == "761.0") {
+                type = "B";
+            }
+
             const item = {
+                type: type,
                 time: o._time,
                 value: o._value
             };
