@@ -1,6 +1,5 @@
 import crn4Dto from "../dto/Crn4Dto";
 import config from "../config/config";
-import dayjs from "dayjs";
 
 /**
  * 순 복사계 검색 service
@@ -19,16 +18,12 @@ const crn4Service: (startDatetime: string, endDatetime: string, type: string) =>
 
     try {
 
-        // 검색 조건 - 날짜형식으로 변환
-        let startDate = dayjs(startDatetime).format("YYYY-MM-DDTHH:mm:ss");
-        let endDate = dayjs(endDatetime).format("YYYY-MM-DDTHH:mm:ss")
-    
         // 검색 조건 - 측정종류 체크
         if(!types.includes(type) && type != "ALL") {
             throw Error;
         }
 
-        return await crn4Dto(startDate, endDate, type);
+        return await crn4Dto(startDatetime, endDatetime, type);
 
     } catch(error) {
 

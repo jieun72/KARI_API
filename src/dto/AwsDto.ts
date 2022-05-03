@@ -24,7 +24,7 @@ const awsDto : (startDatetime: string, endDatetime: string, type: string) => Pro
     let query = new String(
         `
             from(bucket: "${config.bucket}")
-              |> range(start: ${startDatetime}Z, stop: ${endDatetime}Z)
+              |> range(start: ${startDatetime}, stop: ${endDatetime})
               |> filter(fn: (r) => r._measurement == "aws")
               |> filter(fn: (r) => r["_field"] == "vars")
         `

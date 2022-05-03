@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import hfp01Dto from "../dto/Hfp01Dto";
 
 /**
@@ -15,11 +14,7 @@ const hfp01Service: (startDatetime: string, endDatetime: string) => Promise<any>
 
     try {
 
-        // 검색 조건 - 날짜형식으로 변환
-        let startDate = dayjs(startDatetime).format("YYYY-MM-DDTHH:mm:ss");
-        let endDate = dayjs(endDatetime).format("YYYY-MM-DDTHH:mm:ss")
-    
-        return await hfp01Dto(startDate, endDate);
+        return await hfp01Dto(startDatetime, endDatetime);
 
     } catch(error) {
 

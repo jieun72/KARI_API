@@ -23,7 +23,7 @@ const hfp01Dto : (startDatetime: string, endDatetime: string| null) => Promise<a
     let query = new String(
         `
             from(bucket: "${config.bucket}")
-              |> range(start: ${startDatetime}Z, stop: ${endDatetime}Z)
+              |> range(start: ${startDatetime}, stop: ${endDatetime})
               |> filter(fn: (r) => r._measurement == "hfp01")
               |> filter(fn: (r) => r["_field"] == "vars")
               |> filter(fn: (r) => r["name"] == "soil_heat_flux_Avg")

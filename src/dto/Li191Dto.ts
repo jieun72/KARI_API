@@ -24,7 +24,7 @@ const li191Dto : (startDatetime: string, endDatetime: string, type: string) => P
     let query = new String(
         `
             from(bucket: "${config.bucket}")
-              |> range(start: ${startDatetime}Z, stop: ${endDatetime}Z)
+              |> range(start: ${startDatetime}, stop: ${endDatetime})
               |> filter(fn: (r) => r._measurement == "li191")
               |> filter(fn: (r) => r["_field"] == "vars")
         `

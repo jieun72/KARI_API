@@ -26,7 +26,7 @@ const ms700Dto : (startDatetime: string, endDatetime: string| null) => Promise<a
     let query = new String(
         `
             from(bucket: "${config.bucket}")
-              |> range(start: ${startDatetime}Z, stop: ${endDatetime}Z)
+              |> range(start: ${startDatetime}, stop: ${endDatetime})
               |> filter(fn: (r) => r._measurement == "Ms700")
               |> filter(fn: (r) => r["_field"] == "ref_length")
               |> filter(fn: (r) => r["name"] == "401.0" or r["name"] == "602.0" or r["name"] == "761.0")
@@ -55,7 +55,7 @@ const ms700Dto : (startDatetime: string, endDatetime: string| null) => Promise<a
                 // null값 처리
                 o._value = -9999;
             }
-            
+
             const item = {
                 type: type,
                 time: o._time,

@@ -1,6 +1,5 @@
 import awsDto from "../dto/AwsDto";
 import config from "../config/config";
-import dayjs from "dayjs";
 
 /**
  * AWS 검색 service
@@ -18,17 +17,13 @@ const awsService: (startDatetime: string, endDatetime: string, type: string) => 
     const types = config.awsTypes;
 
     try {
-
-        // 검색 조건 - 날짜형식으로 변환
-        let startDate = dayjs(startDatetime).format("YYYY-MM-DDTHH:mm:ss");
-        let endDate = dayjs(endDatetime).format("YYYY-MM-DDTHH:mm:ss")
     
         // 검색 조건 - 측정종류 체크
         if(!types.includes(type) && type != "ALL") {
             throw Error;
         }
 
-        return await awsDto(startDate, endDate, type);
+        return await awsDto(startDatetime, endDatetime, type);
 
     } catch(error) {
 

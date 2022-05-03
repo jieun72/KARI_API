@@ -1,5 +1,4 @@
 import ms700Dto from "../dto/Ms700Dto";
-import dayjs from "dayjs";
 
 /**
  * 초분광 복사계 검색 service
@@ -15,11 +14,7 @@ const ms700Service: (startDatetime: string, endDatetime: string) => Promise<any>
 
     try {
 
-        // 검색 조건 - 날짜형식으로 변환
-        let startDate = dayjs(startDatetime).format("YYYY-MM-DDTHH:mm:ss");
-        let endDate = dayjs(endDatetime).format("YYYY-MM-DDTHH:mm:ss")
-    
-        return await ms700Dto(startDate, endDate);
+        return await ms700Dto(startDatetime, endDatetime);
 
     } catch(error) {
 

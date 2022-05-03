@@ -24,7 +24,7 @@ const si1111Dto : (startDatetime: string, endDatetime: string, type: string) => 
     let query = new String(
         `
             from(bucket: "${config.bucket}")
-              |> range(start: ${startDatetime}Z, stop: ${endDatetime}Z)
+              |> range(start: ${startDatetime}, stop: ${endDatetime})
               |> filter(fn: (r) => r._measurement == "si111")
               |> filter(fn: (r) => r["_field"] == "vars")
         `
