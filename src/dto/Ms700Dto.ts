@@ -20,16 +20,13 @@ const ms700Dto : (startDatetime: string, endDatetime: string| null) => Promise<a
         = { statusCode : 0, error: "", count: 0, data: null };
 
     // influxDB 쿼리 작성
-    // TODO: 추후에 _field->vars로 수정예정
-    // TODO: 추후에 name 수정예정(확정되면)
-    // TODO: 추후에 R,G,B 값 수정 예정(확정되면)
     let query = new String(
         `
             from(bucket: "${config.bucket}")
               |> range(start: ${startDatetime}, stop: ${endDatetime})
               |> filter(fn: (r) => r._measurement == "Ms700")
-              |> filter(fn: (r) => r["_field"] == "ref_length")
-              |> filter(fn: (r) => r["name"] == "401.0" or r["name"] == "602.0" or r["name"] == "761.0")
+              |> filter(fn: (r) => r["_field"] == "vars")
+              |> filter(fn: (r) => r["name"] == "Red" or r["name"] == "Green" or r["name"] == "Blue")
         `
     );
 
@@ -43,11 +40,11 @@ const ms700Dto : (startDatetime: string, endDatetime: string| null) => Promise<a
             const o = tableMeta.toObject(row);
             let type = "";
 
-            if(o.name == "401.0") {
+            if(o.name == "Red") {
                 type = "R";
-            } else if(o.name == "602.0") {
+            } else if(o.name == "Green") {
                 type = "G";
-            } else if(o.name == "761.0") {
+            } else if(o.name == "Blue") {
                 type = "B";
             }
 
