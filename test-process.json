@@ -1,0 +1,15 @@
+{
+    "apps": [
+      {
+        "name": "kari-vis-back",
+        "script": "node",
+        "args": "dist/api/app.js",
+        "log_date_format": "YYYY-MM-DD HH:mm:ss Z",
+        "env": {
+            "NODE_ENV": "test",
+            "PORT": "3001"
+        }
+      }
+    ]
+  }
+  
