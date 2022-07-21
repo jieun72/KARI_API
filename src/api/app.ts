@@ -7,6 +7,7 @@ import li191Route from "./routes/Li191Route";
 import si111Route from "./routes/Si111Route";
 import crn4Route from "./routes/Crn4Route";
 import floxRoute from "./routes/FloxRoute";
+import collectionRateRoute from "./routes/CollectionRateRoute";
 
 const app: express.Application = express.default();
 
@@ -20,5 +21,6 @@ app.use("/getLi191List", li191Route);
 app.use("/getSi111List", si111Route);
 app.use("/getCrn4List", crn4Route);
 app.use("/getFloxList", floxRoute);
+app.use("/getCollectionRateList", collectionRateRoute);
 
 app.listen(3001, () => console.info("Started KARI API"));

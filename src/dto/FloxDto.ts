@@ -102,6 +102,7 @@ export const floxDto : (startDatetime: string, endDatetime: string, type: string
     let result: { statusCode : number, error: string | undefined, count: number, data: any[] | null } 
         = { statusCode : 0, error: "", count: 0, data: null };
 
+    // TODO: 추후 FlOX로 수정 / 추후 name 타입 수정 있을수도
     // influxDB 쿼리 작성
     let query = new String(
         `
