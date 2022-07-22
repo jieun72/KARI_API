@@ -108,8 +108,8 @@ export const floxDto : (startDatetime: string, endDatetime: string, type: string
         `
             from(bucket: "${config.bucket}")
               |> range(start: ${startDatetime}, stop: ${endDatetime})
-              |> filter(fn: (r) => r._measurement == "Ms700")
-              |> filter(fn: (r) => r["_field"] == "ref_length")
+              |> filter(fn: (r) => r._measurement == "flox")
+              |> filter(fn: (r) => r["_field"] == "ref")
         `
     );
 
