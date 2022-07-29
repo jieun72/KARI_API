@@ -119,7 +119,9 @@ export const floxDto : (startDatetime: string, endDatetime: string, type: string
                         level: float(v : r.name) >= ${xMin} and float(v : r.name) <= ${xMax}
                     })
                 )
-              |> filter(fn: (r) => r["level"] == true)`
+              |> filter(fn: (r) => r["level"] == true)
+              |> aggregateWindow(every: 1h, fn: last, createEmpty: false)
+              |> yield(name: "last")`
     }
 
     console.info(query);
