@@ -7,6 +7,7 @@ import li191Route from "./routes/Li191Route";
 import si111Route from "./routes/Si111Route";
 import crn4Route from "./routes/Crn4Route";
 import floxRoute from "./routes/FloxRoute";
+import pom02Route from "./routes/Pom02Route";
 import eddyproRoute from "./routes/EddyproRoute";
 import collectionRateRoute from "./routes/CollectionRateRoute";
 
@@ -22,6 +23,7 @@ app.use("/getLi191List", li191Route);
 app.use("/getSi111List", si111Route);
 app.use("/getCrn4List", crn4Route);
 app.use("/getFloxList", floxRoute);
+app.use("/getPom02List", pom02Route);
 app.use("/getEddyproList", eddyproRoute);
 app.use("/getCollectionRateList", collectionRateRoute);
 
