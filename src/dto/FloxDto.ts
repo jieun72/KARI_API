@@ -1,6 +1,5 @@
 import config from "../config/config";
-import { consoleLogger, FluxTableMetaData, HttpError, InfluxDB } from "@influxdata/influxdb-client";
-import { resolve } from "path";
+import { FluxTableMetaData, HttpError, InfluxDB } from "@influxdata/influxdb-client";
 
 /**
  * Flox sys 검색 dto
