@@ -1,5 +1,6 @@
 import config from "../config/config";
-import { FluxTableMetaData, HttpError, InfluxDB } from "@influxdata/influxdb-client";
+import { consoleLogger, FluxTableMetaData, HttpError, InfluxDB } from "@influxdata/influxdb-client";
+import { resolve } from "path";
 
 /**
  * Flox sys 검색 dto
@@ -102,27 +103,133 @@ export const floxDto : (startDatetime: string, endDatetime: string, type: string
     let result: { statusCode : number, error: string | undefined, count: number, data: any[] | null } 
         = { statusCode : 0, error: "", count: 0, data: null };
 
-    // TODO: 추후 FlOX로 수정 / 추후 name 타입 수정 있을수도
-    // influxDB 쿼리 작성
+
+    // name리스트 작성
+    let nameListQuery = new String(`
+        import "influxdata/influxdb/schema"
+        schema.measurementTagValues(bucket: "KARI_NEW", measurement: "flox", tag: "name")
+    `);
+
+    console.info(nameListQuery);
+
+    let nameList: number[] = [];
+
+    // 1. name 리스트 추출
+    await new Promise(resolve => queryApi.queryRows(nameListQuery, {
+        next(row: string[], tableMeta: FluxTableMetaData) {
+            // 검색 결과 처리
+            const o = tableMeta.toObject(row);
+
+            // 숫자 데이터만 사용
+            if(!isNaN(Number(o._value))) {
+                nameList.push(Number(o._value));
+            }
+
+        },
+        error(error: HttpError) {
+            // 에러 발생 시 - 에러코드, 에러메시지 리턴
+            result.error = error.statusMessage;
+            result.statusCode = error.statusCode;
+            console.error(error);
+
+            return result;
+        },
+        complete() {
+            // 정상 종료 시 - 다음 처리 실시
+            nameList.sort((objA, objB) => objA - objB);
+            resolve(nameList);
+        }
+    }));
+
+    // 2. 갯수 비교 처리용 변수 처리
+    var abs1 = 0
+    var abs2 = 0
+    var nMin = Number(xMin);
+    var nMax = Number(xMax);
+    var min = 2000;
+    var min2 = 2000;
+    var rMin = 0;
+    var rMax = 0;
+    var minIndex = 0;
+    var maxIndex = 0;
+
+    // API 검색조건 최솟값, 최댓값이 범위를 벗어난 경우, 에러 처리
+    if(nMin < nameList[0] || nMax > nameList[nameList.length - 1]) {
+        result.statusCode = 400;
+        result.error = "Bad Request";
+        return result;
+    }
+    
+    // API 검색조건 최솟값, 최댓값과 가장 가까운 r.name 추출
+    for(var i = 0; i < nameList.length; i++) {
+        abs1 = ((nameList[i] - nMin) < 0) ?
+                -(nameList[i] - nMin) : (nameList[i] - nMin);
+
+        abs2 = ((nameList[i] - nMax) < 0) ?
+                -(nameList[i] - nMax) : (nameList[i] - nMax);
+
+        if(abs1 < min) {
+            min = abs1;
+            rMin = nameList[i]; // 입력값 xMin과 가장 가까운 값
+            minIndex = i; // rMin의 인덱스값
+        }
+        if(abs2 < min2) {
+            min2 = abs2
+            rMax = nameList[i]; // 입력값 xMax와 가장 가까운 값
+            maxIndex = i; // rMax의 인덱스값
+        }
+    }
+    
+    // 쿼리용 변수 정의
+    let searchArr: number[] = [];
+    var sIndex = minIndex;
+
+    // 3. 간격 처리 로직
+    if((maxIndex - minIndex) / 50 < 1) {
+        // 간격 총갯수 50개 미만의 경우, 에러 처리
+        result.statusCode = 400;
+        result.error = "Bad Request";
+        return result;
+    } else {
+        var interval = (maxIndex - minIndex) / 50;
+        
+        // 간격(interval) 별 인덱스 추출 & 배열 작성
+        for(var j = 0; j <= (maxIndex - minIndex) / interval; j++) {
+            searchArr.push(nameList[sIndex]);
+            
+            sIndex += interval;
+            sIndex = Math.round(sIndex);
+            
+            if(sIndex > maxIndex) {
+                break;
+            }
+        }
+    }
+
+    // 4. influxDB 쿼리 작성
     let query = new String(
         `
             from(bucket: "${config.bucket}")
               |> range(start: ${startDatetime}, stop: ${endDatetime})
               |> filter(fn: (r) => r._measurement == "flox")
               |> filter(fn: (r) => r["_field"] == "ref")
-        `
+              |> filter(fn: (r) => `
     );
 
-    if(xMin != null && xMax != null) {
-        query += `      |> map(
-                    fn: (r) => ({r with
-                        level: float(v : r.name) >= ${xMin} and float(v : r.name) <= ${xMax}
-                    })
-                )
-              |> filter(fn: (r) => r["level"] == true)
-              |> aggregateWindow(every: 1h, fn: last, createEmpty: false)
-              |> yield(name: "last")`
+    for(var k = 0; k < searchArr.length; k++) {
+        query += `r["name"] == "` + searchArr[k] + `"`;
+
+        if(k < searchArr.length - 1) {
+            query += ` or `;
+        } else {
+            query += `)`;
+        }
     }
+
+    query += `
+               |> aggregateWindow(every: 1h, fn: last, createEmpty: false)
+               |> yield(name: "last")`;
+
 
     console.info(query);
     
@@ -157,7 +264,8 @@ export const floxDto : (startDatetime: string, endDatetime: string, type: string
         complete() {
             // 정상 종료 시 - 정상코드(200), 결과 리턴
             result.statusCode = 200;
-            resolve(result);
+            result.data?.sort((objA, objB) => new Date(objA.time).getTime() - new Date(objB.time).getTime());
+            resolve(result); 
         }
     }));
 };
