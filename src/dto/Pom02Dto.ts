@@ -21,10 +21,9 @@ const pom02Dto : (startDatetime: string, endDatetime: string, type: string) => P
         = { statusCode : 0, error: "", count: 0, data: null };
 
     // influxDB 쿼리 작성
-    // TODO : from(bucket: "${config.bucket}") 로 수정
     let query = new String(
         `
-            from(bucket: "test2")
+            from(bucket: "${config.bucket}")
               |> range(start: ${startDatetime}, stop: ${endDatetime})
               |> filter(fn: (r) => r._measurement == "pom02")
         `
