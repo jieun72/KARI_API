@@ -19,16 +19,8 @@ export const floxService: (startDatetime: string, endDatetime: string, type: str
     try {
 
         // 검색 조건 - 측정종류 체크
-        if(!types.includes(type) && type != "ALL") {
+        if(!types.includes(type)) {
             throw Error;
-        }
-
-        if(type == "R") {
-            type = "Red";
-        } else if(type == "G") {
-            type = "Green";
-        } else if(type == "B") {
-            type = "Blue";
         }
 
         startDatetime = await convertKSTToUTC(startDatetime);

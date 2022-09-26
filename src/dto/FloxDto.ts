@@ -17,6 +17,18 @@ export const floxDto : (startDatetime: string, endDatetime: string, type: string
     const client = new InfluxDB({ url, token });
     const queryApi = client.getQueryApi(config.org);
 
+    const indexTypes = config.floxTypesIndex;
+
+    // field 처리
+    let field = "";
+    if(type == "REF_FULL") {
+        field = "ref_length";
+    } else if(type == "REF_FLUO") {
+        field = "ref_length_FLUO";
+    } else {
+        field = "vars";
+    }
+
     // 결과용 변수 정의
     let result: { statusCode : number, error: string | undefined, count: number, data: any[] | null } 
         = { statusCode : 0, error: "", count: 0, data: null };
@@ -27,15 +39,23 @@ export const floxDto : (startDatetime: string, endDatetime: string, type: string
             from(bucket: "${config.bucket}")
               |> range(start: ${startDatetime}, stop: ${endDatetime})
               |> filter(fn: (r) => r._measurement == "flox")
-              |> filter(fn: (r) => r["_field"] == "vars")
+              |> filter(fn: (r) => r["_field"] == "${field}")
         `
     );
 
-    // 해당하는 측정 종류만 검색(전체검색이 아닐 경우)
-    if(type != "ALL") {
-        query += `      |> filter(fn: (r) => r["name"] == "${type}") `;
+    if(type == "INDEX") {
+        query += "      |> filter(fn: (r) =>";
+        for(var k = 0; k < indexTypes.length; k++) {
+            query += `r["name"] == "` + indexTypes[k] + `"`;
+    
+            if(k < indexTypes.length - 1) {
+                query += ` or `;
+            } else {
+                query += `)`;
+            }
+        }
     }
-
+    
     console.info(query);
     
     result.data = [];
@@ -45,14 +65,6 @@ export const floxDto : (startDatetime: string, endDatetime: string, type: string
             // 검색 결과 처리
             const o = tableMeta.toObject(row);
             let type = "";
-
-            if(o.name == "Red") {
-                o.name = "R";
-            } else if(o.name == "Green") {
-                o.name = "G";
-            } else if(o.name == "Blue") {
-                o.name = "B";
-            }
 
             if(o._value == -999) {
                 // null값 처리
