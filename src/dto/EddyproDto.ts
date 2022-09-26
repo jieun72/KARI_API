@@ -1,5 +1,6 @@
 import config from "../config/config";
 import { FluxTableMetaData, HttpError, InfluxDB } from "@influxdata/influxdb-client";
+import { convertUTCToKST } from "../common/common";
 
 /**
  * 가스 분석기 검색 dto
@@ -40,7 +41,7 @@ const eddyproDto : (startDatetime: string, endDatetime: string, type: string) =>
     result.data = [];
 
     return await new Promise(resolve => queryApi.queryRows(query, {
-        next(row: string[], tableMeta: FluxTableMetaData) {
+        async next(row: string[], tableMeta: FluxTableMetaData) {
             // 검색 결과 처리
             const o = tableMeta.toObject(row);
             if(o._value == -999) {
@@ -49,7 +50,7 @@ const eddyproDto : (startDatetime: string, endDatetime: string, type: string) =>
             }
             const item = {
                 type: o.name,
-                time: o._time,
+                time: await convertUTCToKST(o._time),
                 value: o._value
             };
 

@@ -1,5 +1,6 @@
 import config from "../config/config";
 import { FluxTableMetaData, HttpError, InfluxDB } from "@influxdata/influxdb-client";
+import { convertUTCToKST } from "../common/common";
 
 /**
  * 장비별 수집율 검색 dto
@@ -53,7 +54,7 @@ const collectionRateDto : (startDatetime: string, endDatetime: string, type: str
     result.data = [];
 
     return await new Promise(resolve => queryApi.queryRows(query, {
-        next(row: string[], tableMeta: FluxTableMetaData) {
+        async next(row: string[], tableMeta: FluxTableMetaData) {
             // 검색 결과 처리
             const o = tableMeta.toObject(row);
             var cValue = 0;
@@ -70,7 +71,7 @@ const collectionRateDto : (startDatetime: string, endDatetime: string, type: str
             }
             const item = {
                 type: o._measurement,
-                time: o._time,
+                time: await convertUTCToKST(o._time),
                 value: cValue.toFixed(2)
             };
 

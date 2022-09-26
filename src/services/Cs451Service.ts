@@ -1,5 +1,6 @@
 import cs451Dto from "../dto/Cs451Dto";
 import config from "../config/config";
+import { convertKSTToUTC } from "../common/common";
 
 /**
  * 수심/수온 측정계 검색 service
@@ -23,6 +24,9 @@ const cs451Service: (startDatetime: string, endDatetime: string, type: string) =
             throw Error;
         }
 
+        startDatetime = await convertKSTToUTC(startDatetime);
+        endDatetime = await convertKSTToUTC(endDatetime);
+        
         return await cs451Dto(startDatetime, endDatetime, type);
 
     } catch(error) {

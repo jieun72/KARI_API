@@ -1,5 +1,6 @@
 import config from "../config/config";
 import { FluxTableMetaData, HttpError, InfluxDB } from "@influxdata/influxdb-client";
+import { convertUTCToKST } from "../common/common";
 
 /**
  * 토양열 플럭스 센서 검색 dto
@@ -35,7 +36,7 @@ const hfp01Dto : (startDatetime: string, endDatetime: string| null) => Promise<a
     result.data = [];
 
     return await new Promise(resolve => queryApi.queryRows(query, {
-        next(row: string[], tableMeta: FluxTableMetaData) {
+        async next(row: string[], tableMeta: FluxTableMetaData) {
             // 검색 결과 처리
             const o = tableMeta.toObject(row);
             if(o._value == -999) {
@@ -43,7 +44,7 @@ const hfp01Dto : (startDatetime: string, endDatetime: string| null) => Promise<a
                 o._value = -9999;
             }
             const item = {
-                time: o._time,
+                time: await convertUTCToKST(o._time),
                 value: o._value
             };
 

@@ -1,5 +1,6 @@
 import { floxDto, floxRefDto} from "../dto/FloxDto";
 import config from "../config/config";
+import { convertKSTToUTC } from "../common/common";
 
 /**
  * Flox sys 검색 service
@@ -30,6 +31,9 @@ export const floxService: (startDatetime: string, endDatetime: string, type: str
             type = "Blue";
         }
 
+        startDatetime = await convertKSTToUTC(startDatetime);
+        endDatetime = await convertKSTToUTC(endDatetime);
+        
         return await floxDto(startDatetime, endDatetime, type);
 
     } catch(error) {
@@ -55,7 +59,10 @@ export const floxService: (startDatetime: string, endDatetime: string, type: str
         = { statusCode : 0, error: "", count: 0, data: [] };
  
     try {
-                
+
+        startDatetime = await convertKSTToUTC(startDatetime);
+        endDatetime = await convertKSTToUTC(endDatetime);
+        
         return await floxRefDto(startDatetime, endDatetime, xMin, xMax);
 
     } catch(error) {

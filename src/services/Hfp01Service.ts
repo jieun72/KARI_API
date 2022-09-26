@@ -1,4 +1,5 @@
 import hfp01Dto from "../dto/Hfp01Dto";
+import { convertKSTToUTC } from "../common/common";
 
 /**
  * 토양열 플럭스 센서 service
@@ -14,6 +15,9 @@ const hfp01Service: (startDatetime: string, endDatetime: string) => Promise<any>
 
     try {
 
+        startDatetime = await convertKSTToUTC(startDatetime);
+        endDatetime = await convertKSTToUTC(endDatetime);
+        
         return await hfp01Dto(startDatetime, endDatetime);
 
     } catch(error) {

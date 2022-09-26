@@ -1,5 +1,6 @@
 import si111Dto from "../dto/Si111Dto";
 import config from "../config/config";
+import { convertKSTToUTC } from "../common/common";
 
 /**
  * 적외선 복사계 검색 service
@@ -22,6 +23,9 @@ const si111Service: (startDatetime: string, endDatetime: string, type: string) =
         if(!types.includes(type) && type != "ALL") {
             throw Error;
         }
+
+        startDatetime = await convertKSTToUTC(startDatetime);
+        endDatetime = await convertKSTToUTC(endDatetime);
 
         return await si111Dto(startDatetime, endDatetime, type);
 

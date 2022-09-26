@@ -1,5 +1,6 @@
 import pom02Dto from "../dto/Pom02Dto";
 import config from "../config/config";
+import { convertKSTToUTC } from "../common/common";
 
 /**
  * 대기 복사계 검색 service
@@ -23,6 +24,9 @@ const pom02Service: (startDatetime: string, endDatetime: string, type: string) =
             throw Error;
         }
 
+        startDatetime = await convertKSTToUTC(startDatetime);
+        endDatetime = await convertKSTToUTC(endDatetime);
+        
         return await pom02Dto(startDatetime, endDatetime, type);
 
     } catch(error) {

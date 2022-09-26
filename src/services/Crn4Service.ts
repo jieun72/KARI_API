@@ -1,5 +1,6 @@
 import crn4Dto from "../dto/Crn4Dto";
 import config from "../config/config";
+import { convertKSTToUTC } from "../common/common";
 
 /**
  * 순 복사계 검색 service
@@ -22,6 +23,9 @@ const crn4Service: (startDatetime: string, endDatetime: string, type: string) =>
         if(!types.includes(type) && type != "ALL") {
             throw Error;
         }
+        
+        startDatetime = await convertKSTToUTC(startDatetime);
+        endDatetime = await convertKSTToUTC(endDatetime);
 
         return await crn4Dto(startDatetime, endDatetime, type);
 

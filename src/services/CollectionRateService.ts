@@ -1,5 +1,6 @@
 import collectionRateDto from "../dto/CollectionRateDto";
 import config from "../config/config";
+import { convertKSTToUTC } from "../common/common";
 
 /**
  * 장비별 수집율 검색 service
@@ -22,6 +23,9 @@ const collectionRateService: (startDatetime: string, endDatetime: string, type: 
         if(!types.includes(type)) {
             throw Error;
         }
+        
+        startDatetime = await convertKSTToUTC(startDatetime);
+        endDatetime = await convertKSTToUTC(endDatetime);
 
         return await collectionRateDto(startDatetime, endDatetime, type);
 

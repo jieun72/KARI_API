@@ -1,5 +1,6 @@
 import eddyproDto from "../dto/EddyproDto";
 import config from "../config/config";
+import { convertKSTToUTC } from "../common/common";
 
 /**
  * 가스 분석기 검색 service
@@ -22,6 +23,9 @@ const eddyproService: (startDatetime: string, endDatetime: string, type: string)
         if(!types.includes(type) && type != "ALL") {
             throw Error;
         }
+
+        startDatetime = await convertKSTToUTC(startDatetime);
+        endDatetime = await convertKSTToUTC(endDatetime);
 
         return await eddyproDto(startDatetime, endDatetime, type);
 

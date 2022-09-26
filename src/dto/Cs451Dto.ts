@@ -1,6 +1,7 @@
 import config from "../config/config";
 import dayjs from "dayjs";
 import { FluxTableMetaData, HttpError, InfluxDB } from "@influxdata/influxdb-client";
+import { convertUTCToKST } from "../common/common";
 
 /**
  * 수심/수온 측정계 검색 dto
@@ -44,7 +45,7 @@ const cs451Dto : (startDatetime: string, endDatetime: string, type: string) => P
     result.data = [];
 
     return await new Promise(resolve => queryApi.queryRows(query, {
-        next(row: string[], tableMeta: FluxTableMetaData) {
+        async next(row: string[], tableMeta: FluxTableMetaData) {
             // 검색 결과 처리
             const o = tableMeta.toObject(row);
             if (unixTypes.includes(o.name)) {
@@ -57,7 +58,7 @@ const cs451Dto : (startDatetime: string, endDatetime: string, type: string) => P
             }
             const item = {
                 type: o.name,
-                time: o._time,
+                time: await convertUTCToKST(o._time),
                 value: o._value
             };
 

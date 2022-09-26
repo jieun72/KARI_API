@@ -1,5 +1,6 @@
 import li191Dto from "../dto/Li191Dto";
 import config from "../config/config";
+import { convertKSTToUTC } from "../common/common";
 
 /**
  * 광합성 유효 복사 센서 검색 service
@@ -22,6 +23,9 @@ const li191Service: (startDatetime: string, endDatetime: string, type: string) =
         if(!types.includes(type) && type != "ALL") {
             throw Error;
         }
+
+        startDatetime = await convertKSTToUTC(startDatetime);
+        endDatetime = await convertKSTToUTC(endDatetime);
 
         return await li191Dto(startDatetime, endDatetime, type);
 

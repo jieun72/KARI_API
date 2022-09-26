@@ -1,4 +1,5 @@
 import ms700Dto from "../dto/Ms700Dto";
+import { convertKSTToUTC } from "../common/common";
 
 /**
  * 초분광 복사계 검색 service
@@ -13,6 +14,9 @@ const ms700Service: (startDatetime: string, endDatetime: string) => Promise<any>
         = { statusCode : 0, error: "", count: 0, data: [] };
 
     try {
+
+        startDatetime = await convertKSTToUTC(startDatetime);
+        endDatetime = await convertKSTToUTC(endDatetime);
 
         return await ms700Dto(startDatetime, endDatetime);
 
