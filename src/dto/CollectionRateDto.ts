@@ -20,8 +20,8 @@ const collectionRateDto : (startDatetime: string, endDatetime: string, type: str
         si111: "IRT1_TargetTC_Avg",
         crn4: "CM3Up_Avg",
         flox: "SIF_A_ifld",
-        pom02: "TODO",
-        eddypro: "TODO"
+        pom02: "AOT",
+        eddypro: "wind_dir"
     }
 
     const url = config.url
