@@ -119,7 +119,7 @@ export const floxDto : (startDatetime: string, endDatetime: string, type: string
     // name리스트 작성
     let nameListQuery = new String(`
         import "influxdata/influxdb/schema"
-        schema.measurementTagValues(bucket: "KARI_NEW", measurement: "flox", tag: "name")
+        schema.measurementTagValues(bucket: "NGOS", measurement: "flox", tag: "name")
     `);
 
     console.info(nameListQuery);
