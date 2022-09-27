@@ -14,13 +14,22 @@ export const floxService: (startDatetime: string, endDatetime: string, type: str
     let result: { statusCode : number, error: string | undefined, count: number, data: any[] | null } 
         = { statusCode : 0, error: "", count: 0, data: [] };
 
-    const types = config.floxTypes;   
+    const types = config.floxTypes;
+    const allTypes = config.floxAllTypes;
     
     try {
 
         // 검색 조건 - 측정종류 체크
-        if(!types.includes(type)) {
+        if(!types.includes(type) && !allTypes.includes(type) && type != "ALL") {
             throw Error;
+        }
+        
+        if(type == "R") {
+            type = "Red";
+        } else if(type == "G") {
+            type = "Green";
+        } else if(type == "B") {
+            type = "Blue";
         }
 
         startDatetime = await convertKSTToUTC(startDatetime);

@@ -10,6 +10,7 @@ export default {
     si111Types : [ "IRT1_TargetTC_Avg", "IRT2_TargetTC_Avg" ],
     crn4Types : [ "CM3Up_Avg", "CM3Dn_Avg", "CG3UpCo_Avg", "CG3DnCo_Avg" ],
     floxTypes : [ "REF_FULL", "REF_FLUO", "INDEX" ],
+    floxAllTypes : [ "SIF_ALL", "SIF_A_ifld", "SIF_A_SVD", "SIF_A_sfm", "SIF_B_ifld", "SIF_B_SVD", "SIF_B_sfm", "PAR_inc", "R", "G", "B", "NIR" ],
     floxTypesIndex : [ "SIF_A_ifld", "SIF_A_SVD", "SIF_A_sfm", "SIF_B_ifld", "SIF_B_SVD", "SIF_B_sfm", "PAR_inc" ],
     pom02Types : [ "AOT", "wl_1", "wl_2", "wl_3", "wl_4", "wl_5", "wl_6", "wl_7", "wl_8", "wl_9", "wl_10", "wl_11", "Oze", "PWV" ],
     eddyproTypes : [ "wind_dir", "Tau", "H", "LE", "co2_flux", "h2o_flux" ],

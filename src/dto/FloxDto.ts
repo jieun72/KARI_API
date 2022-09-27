@@ -18,6 +18,7 @@ export const floxDto : (startDatetime: string, endDatetime: string, type: string
     const queryApi = client.getQueryApi(config.org);
 
     const indexTypes = config.floxTypesIndex;
+    const allTypes = config.floxAllTypes;
 
     // field 처리
     let field = "";
@@ -43,7 +44,21 @@ export const floxDto : (startDatetime: string, endDatetime: string, type: string
         `
     );
 
-    if(type == "INDEX") {
+    // 해당하는 측정 종류만 검색(전체검색이 아닐 경우)
+    if(type != "ALL" && allTypes.includes(type)) {
+        query += `      |> filter(fn: (r) => r["name"] == "${type}") `;
+    } else if(type == "ALL") {
+        query += "      |> filter(fn: (r) =>";
+        for(var k = 0; k < allTypes.length; k++) {
+            query += `r["name"] == "` + allTypes[k] + `"`;
+    
+            if(k < allTypes.length - 1) {
+                query += ` or `;
+            } else {
+                query += `)`;
+            }
+        }
+    } else if(type == "INDEX") {
         query += "      |> filter(fn: (r) =>";
         for(var k = 0; k < indexTypes.length; k++) {
             query += `r["name"] == "` + indexTypes[k] + `"`;
