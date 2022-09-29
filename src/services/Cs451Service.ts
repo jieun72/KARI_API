@@ -20,7 +20,7 @@ const cs451Service: (startDatetime: string, endDatetime: string, type: string) =
     try {
 
         // 검색 조건 - 측정종류 체크
-        if(!types.includes(type) && type != "ALL") {
+        if(!types.includes(type) && type != "ALL" && type != "Water_Level" && type != "Water_Temp") {
             throw Error;
         }
 

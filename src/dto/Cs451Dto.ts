@@ -18,6 +18,11 @@ const cs451Dto : (startDatetime: string, endDatetime: string, type: string) => P
     const client = new InfluxDB({ url, token });
     const queryApi = client.getQueryApi(config.org);
 
+    // 검색 타입 종류
+    const allTypes = config.cs451Types;
+    const levelTypes = config.cs451LevelTypes;
+    const tempTypes = config.cs451TempTypes;
+
     // UNIX TIME 변환 대상 항목
     const unixTypes = config.cs451UNIXTypes;
 
@@ -36,8 +41,30 @@ const cs451Dto : (startDatetime: string, endDatetime: string, type: string) => P
     );
 
     // 해당하는 측정 종류만 검색(전체검색이 아닐 경우)
-    if(type != "ALL") {
+    if(type != "ALL" && allTypes.includes(type)) {
         query += `      |> filter(fn: (r) => r["name"] == "${type}")`;
+    } else if(type == "Water_Level") {
+        query += "      |> filter(fn: (r) =>";
+        for(var k = 0; k < levelTypes.length; k++) {
+            query += `r["name"] == "` + levelTypes[k] + `"`;
+    
+            if(k < levelTypes.length - 1) {
+                query += ` or `;
+            } else {
+                query += `)`;
+            }
+        }
+    } else if(type == "Water_Temp") {
+        query += "      |> filter(fn: (r) =>";
+        for(var k = 0; k < tempTypes.length; k++) {
+            query += `r["name"] == "` + tempTypes[k] + `"`;
+    
+            if(k < tempTypes.length - 1) {
+                query += ` or `;
+            } else {
+                query += `)`;
+            }
+        }
     }
 
     console.info(query);

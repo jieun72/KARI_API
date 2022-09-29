@@ -15,12 +15,11 @@ export const floxService: (startDatetime: string, endDatetime: string, type: str
         = { statusCode : 0, error: "", count: 0, data: [] };
 
     const types = config.floxTypes;
-    const allTypes = config.floxAllTypes;
     
     try {
 
         // 검색 조건 - 측정종류 체크
-        if(!types.includes(type) && !allTypes.includes(type) && type != "ALL") {
+        if(!types.includes(type) && type != "REF_FULL" && type != "REF_FLUO" && type != "ALL") {
             throw Error;
         }
         
