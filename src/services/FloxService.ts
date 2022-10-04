@@ -20,7 +20,7 @@ export const floxService: (startDatetime: string, endDatetime: string, type: str
     try {
 
         // 검색 조건 - 측정종류 체크
-        if(!types.includes(type) && type != "REF_FULL" && type != "REF_FLUO" && type != "ALL" && !allTypes.includes(type)) {
+        if(!types.includes(type) && !allTypes.includes(type) && type != "ALL") {
             throw Error;
         }
         
