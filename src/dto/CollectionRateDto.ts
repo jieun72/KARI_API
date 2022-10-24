@@ -16,11 +16,12 @@ const collectionRateDto : (startDatetime: string, endDatetime: string, type: str
         Ms700: "Red",
         aws: "t_hmp_Avg",
         cs451: "Lvl_cm_TMx",
+        hfp01: "soil_heat_flux_Avg",
         li191: "LineQ1_Avg",
         si111: "IRT1_TargetTC_Avg",
         crn4: "CM3Up_Avg",
         flox: "SIF_A_ifld",
-        pom02: "AOT",
+        pom02: "col1",
         eddypro: "wind_dir"
     }
 
@@ -32,6 +33,13 @@ const collectionRateDto : (startDatetime: string, endDatetime: string, type: str
 
     // Type별 대표 name 가져오기
     const name = keyValArray[type];
+    
+    let vars = "";
+    if(type == "pom02") {
+        vars = "PWV";
+    } else {
+        vars = "vars";
+    }
 
     // 결과용 변수 정의
     let result: { statusCode : number, error: string | undefined, count: number, data: any[] | null } 
@@ -43,7 +51,7 @@ const collectionRateDto : (startDatetime: string, endDatetime: string, type: str
             from(bucket: "${config.bucket}")
               |> range(start: ${startDatetime}, stop: ${endDatetime})
               |> filter(fn: (r) => r._measurement == "${type}")
-              |> filter(fn: (r) => r["_field"] == "vars")
+              |> filter(fn: (r) => r["_field"] == "${vars}")
               |> filter(fn: (r) => r["name"] == "${name}")
               |> aggregateWindow(every: 1d, fn: count)
         `
