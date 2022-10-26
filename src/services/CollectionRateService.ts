@@ -24,9 +24,11 @@ const collectionRateService: (startDatetime: string, endDatetime: string, type: 
             throw Error;
         }
         
-        startDatetime = await convertKSTToUTC(startDatetime);
-        endDatetime = await convertKSTToUTC(endDatetime);
-
+        if(type != "aws") {
+            startDatetime = await convertKSTToUTC(startDatetime);
+            endDatetime = await convertKSTToUTC(endDatetime);    
+        }
+        
         return await collectionRateDto(startDatetime, endDatetime, type);
 
     } catch(error) {

@@ -66,6 +66,7 @@ const collectionRateDto : (startDatetime: string, endDatetime: string, type: str
             // 검색 결과 처리
             const o = tableMeta.toObject(row);
             var cValue = 0;
+            var returnTime;
 
             if(o._value > 0) {
                 // 수집율 계산
@@ -77,9 +78,14 @@ const collectionRateDto : (startDatetime: string, endDatetime: string, type: str
                     cValue = o._value / 144;
                 }
             }
+            if(type == "aws") {
+                returnTime = o._time;
+            } else {
+                returnTime = await convertUTCToKST(o._time);
+            }
             const item = {
                 type: o._measurement,
-                time: await convertUTCToKST(o._time),
+                time: returnTime,
                 value: cValue.toFixed(2)
             };
 
