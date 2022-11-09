@@ -64,7 +64,11 @@ export const floxService: (startDatetime: string, endDatetime: string, type: str
         startDatetime = await convertKSTToUTC(startDatetime);
         endDatetime = await convertKSTToUTC(endDatetime);
         
-        return await floxRefDto(startDatetime, endDatetime, xMin, xMax);
+        const temp = await floxRefDto(startDatetime, endDatetime, xMin, xMax);
+        temp.data?.sort((a: { xValue: number; }, b: { xValue: number; }) => {
+            return a.xValue - b.xValue;
+        });
+        return temp;
 
     } catch(error) {
 
